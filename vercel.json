@@ -1,0 +1,6 @@
+# Vercel deployment configuration
+{
+  "buildCommand": "npm run build",
+  "outputDirectory": "apps/creator/dist",
+  "env": ["VITE_API_URL"]
+}
