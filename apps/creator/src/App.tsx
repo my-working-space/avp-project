@@ -1,6 +1,7 @@
 import { Toaster } from 'react-hot-toast';
 import { Upload } from 'lucide-react';
 import { TTSForm } from './components/TTSForm';
+import { PlayerPreview } from './components/PlayerPreview';
 import './index.css';
 import { useState } from 'react';
 
@@ -23,6 +24,11 @@ function App() {
         {/* TTS Form */}
         <div className="max-w-2xl mx-auto mb-12">
           <TTSForm onAudioGenerated={setAudioBlob} />
+        </div>
+
+        {/* Player Preview */}
+        <div className="max-w-2xl mx-auto mb-12">
+          <PlayerPreview />
         </div>
 
         {/* Main Content */}
