@@ -108,9 +108,7 @@ export function TTSForm({ onAudioGenerated }: TTSFormProps) {
             className="w-full h-32 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             disabled={isLoading}
           />
-          <p className="text-xs text-gray-500 mt-1">
-            {text.length} / 5000 characters
-          </p>
+          <p className="text-xs text-gray-500 mt-1">{text.length} / 5000 characters</p>
         </div>
 
         {/* Language Selection */}
@@ -126,8 +124,7 @@ export function TTSForm({ onAudioGenerated }: TTSFormProps) {
                 setLanguage(e.target.value);
                 // Reset voice when language changes
                 setVoice(
-                  voices[e.target.value as keyof typeof voices]?.[0]?.value ||
-                  'en-US-Neural2-C'
+                  voices[e.target.value as keyof typeof voices]?.[0]?.value || 'en-US-Neural2-C'
                 );
               }}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"

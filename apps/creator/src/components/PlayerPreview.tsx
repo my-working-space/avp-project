@@ -44,12 +44,7 @@ export function PlayerPreview() {
                 <p className="text-gray-600 font-medium mb-2">Load an AVP file to preview</p>
                 <p className="text-sm text-gray-500">Click to select file</p>
               </div>
-              <input
-                type="file"
-                accept=".avp"
-                onChange={handleFileSelect}
-                className="hidden"
-              />
+              <input type="file" accept=".avp" onChange={handleFileSelect} className="hidden" />
             </label>
             <p className="text-xs text-gray-500 mt-4">
               Supported: AVP files (ZIP archives with manifest.json)

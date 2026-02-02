@@ -77,7 +77,9 @@ function App() {
       {/* Status */}
       {audioBlob && (
         <div className="max-w-2xl mx-auto mt-8 p-4 bg-green-50 border border-green-200 rounded-lg text-green-800">
-          <p className="font-semibold">✓ Audio generated ({Math.round(audioBlob.size / 1024)} KB)</p>
+          <p className="font-semibold">
+            ✓ Audio generated ({Math.round(audioBlob.size / 1024)} KB)
+          </p>
         </div>
       )}
     </div>
