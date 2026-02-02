@@ -1,0 +1,41 @@
+name: PR Checks
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Use Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests
+        id: run-tests
+        run: npm run test
+
+      - name: Post PR summary comment
+        if: always()
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const tests = steps['run-tests'];
+            const passed = tests && tests.outcome === 'success';
+            const status = passed ? '✅ All checks passed' : '❌ Some checks failed';
+            const body = `### PR automated summary\n\n${status}\n\nThis repository uses the review checklist in \`REVIEW_GUIDELINES.md\` and the PR template to capture the author's thought process.\n\n**Quick reviewer checklist**:\n- Tests cover the change and pass (automated)\n- No secrets or sensitive data in the diff\n- Consider backwards compatibility and docs updates\n\n_If you are the author, please fill the 'Author: Thought process' section of the PR template to help manual review._\n\nLink to guidelines: https://github.com/${process.env.GITHUB_REPOSITORY}/blob/${process.env.GITHUB_HEAD_REF}/REVIEW_GUIDELINES.md`;
+            github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.pull_request.number,
+              body,
+            });
