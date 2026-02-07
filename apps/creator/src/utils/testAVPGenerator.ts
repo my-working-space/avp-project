@@ -2,7 +2,7 @@
  * Utility to create test AVP files for development
  */
 
-import { Manifest } from '../packages/player/src/types';
+import { Manifest } from '@avp/player';
 
 /**
  * Creates a simple test AVP file with manifest, audio, and poster
