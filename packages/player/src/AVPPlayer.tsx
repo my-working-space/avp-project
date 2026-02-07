@@ -44,43 +44,45 @@ export const AVPPlayer: React.FC<AVPPlayerProps> = ({ src, onPlay, onPause, onTi
 
   // Set up audio
   useEffect(() => {
-    if (content && audioRef.current) {
-      const audioUrl = URL.createObjectURL(content.audio);
-      audioRef.current.src = audioUrl;
-
-      const handleLoadedMetadata = () => {
-        setDuration(audioRef.current?.duration || 0);
-      };
-
-      const handleTimeUpdate = () => {
-        const time = audioRef.current?.currentTime || 0;
-        setCurrentTime(time);
-        onTimeUpdate?.(time);
-      };
-
-      const handlePlay = () => {
-        setIsPlaying(true);
-        onPlay?.();
-      };
-
-      const handlePause = () => {
-        setIsPlaying(false);
-        onPause?.();
-      };
-
-      audioRef.current.addEventListener('loadedmetadata', handleLoadedMetadata);
-      audioRef.current.addEventListener('timeupdate', handleTimeUpdate);
-      audioRef.current.addEventListener('play', handlePlay);
-      audioRef.current.addEventListener('pause', handlePause);
-
-      return () => {
-        audioRef.current?.removeEventListener('loadedmetadata', handleLoadedMetadata);
-        audioRef.current?.removeEventListener('timeupdate', handleTimeUpdate);
-        audioRef.current?.removeEventListener('play', handlePlay);
-        audioRef.current?.removeEventListener('pause', handlePause);
-        URL.revokeObjectURL(audioUrl);
-      };
+    if (!content || !audioRef.current) {
+      return;
     }
+
+    const audioUrl = URL.createObjectURL(content.audio);
+    audioRef.current.src = audioUrl;
+
+    const handleLoadedMetadata = () => {
+      setDuration(audioRef.current?.duration || 0);
+    };
+
+    const handleTimeUpdate = () => {
+      const time = audioRef.current?.currentTime || 0;
+      setCurrentTime(time);
+      onTimeUpdate?.(time);
+    };
+
+    const handlePlay = () => {
+      setIsPlaying(true);
+      onPlay?.();
+    };
+
+    const handlePause = () => {
+      setIsPlaying(false);
+      onPause?.();
+    };
+
+    audioRef.current.addEventListener('loadedmetadata', handleLoadedMetadata);
+    audioRef.current.addEventListener('timeupdate', handleTimeUpdate);
+    audioRef.current.addEventListener('play', handlePlay);
+    audioRef.current.addEventListener('pause', handlePause);
+
+    return () => {
+      audioRef.current?.removeEventListener('loadedmetadata', handleLoadedMetadata);
+      audioRef.current?.removeEventListener('timeupdate', handleTimeUpdate);
+      audioRef.current?.removeEventListener('play', handlePlay);
+      audioRef.current?.removeEventListener('pause', handlePause);
+      URL.revokeObjectURL(audioUrl);
+    };
   }, [content, onPlay, onPause, onTimeUpdate]);
 
   if (isLoading) {

@@ -7,6 +7,9 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      issues: write
 
     steps:
       - name: Checkout
@@ -29,10 +32,10 @@ jobs:
         uses: actions/github-script@v6
         with:
           script: |
-            const tests = steps['run-tests'];
-            const passed = tests && tests.outcome === 'success';
+            const testOutcome = '${{ steps.run-tests.outcome }}';
+            const passed = testOutcome === 'success';
             const status = passed ? '✅ All checks passed' : '❌ Some checks failed';
-            const body = `### PR automated summary\n\n${status}\n\nThis repository uses the review checklist in \`REVIEW_GUIDELINES.md\` and the PR template to capture the author's thought process.\n\n**Quick reviewer checklist**:\n- Tests cover the change and pass (automated)\n- No secrets or sensitive data in the diff\n- Consider backwards compatibility and docs updates\n\n_If you are the author, please fill the 'Author: Thought process' section of the PR template to help manual review._\n\nLink to guidelines: https://github.com/${process.env.GITHUB_REPOSITORY}/blob/${process.env.GITHUB_HEAD_REF}/REVIEW_GUIDELINES.md`;
+            const body = `### PR automated summary\n\n${status}\n\nThis repository uses the review checklist in \`REVIEW_GUIDELINES.md\` and the PR template to capture the author's thought process.\n\n**Quick reviewer checklist**:\n- Tests cover the change and pass (automated)\n- No secrets or sensitive data in the diff\n- Consider backwards compatibility and docs updates\n\n_If you are the author, please fill the 'Author: Thought process' section of the PR template to help manual review._\n\nLink to guidelines: https://github.com/${{ github.repository }}/blob/${{ github.head_ref }}/REVIEW_GUIDELINES.md`;
             github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
