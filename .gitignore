@@ -15,6 +15,11 @@ build/
 .env.local
 .env.*.local
 
+# Service account credentials
+service-account.json
+*.json.key
+*-key.json
+
 # IDE & Editor
 .vscode/
 .idea/

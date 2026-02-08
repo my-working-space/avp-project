@@ -1,0 +1,10 @@
+.gitignore
+dist/
+node_modules/
+coverage/
+*.log
+.env
+.env.local
+service-account.json
+*.json.key
+*-key.json
