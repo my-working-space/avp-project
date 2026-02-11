@@ -1,67 +1,59 @@
-import { TTSProvider, TTSOptions } from '../../../shared/types/providers';
+import { TextToSpeechClient } from '@google-cloud/text-to-speech';
+import { TTSProvider, TTSOptions } from '../../../shared/types/providers.js';
+import * as fs from 'fs';
+import * as path from 'path';
 
 /**
  * Google Cloud Text-to-Speech Provider
- * Requires GOOGLE_CLOUD_PROJECT_ID and GOOGLE_CLOUD_TTS_API_KEY in .env
+ * Uses service account credentials (JSON keyfile) for authentication
  */
 export class GoogleTTSProvider implements TTSProvider {
     name = 'google';
     private projectId: string;
-    private apiKey: string;
+    private client: TextToSpeechClient;
 
-    constructor(projectId: string, apiKey: string) {
-        if (!projectId || !apiKey) {
-            throw new Error('GoogleTTSProvider requires GOOGLE_CLOUD_PROJECT_ID and GOOGLE_CLOUD_TTS_API_KEY');
+    constructor(projectId: string, keyFilePath: string) {
+        if (!projectId || !keyFilePath) {
+            throw new Error('GoogleTTSProvider requires projectId and keyFilePath to service account JSON');
         }
+
+        // Verify keyfile exists
+        if (!fs.existsSync(keyFilePath)) {
+            throw new Error(`Service account keyfile not found: ${keyFilePath}`);
+        }
+
         this.projectId = projectId;
-        this.apiKey = apiKey;
+
+        // Initialize Google Cloud TTS client with service account credentials
+        this.client = new TextToSpeechClient({
+            keyFilename: path.resolve(keyFilePath),
+        });
     }
 
     async generateSpeech(text: string, options: TTSOptions = {}): Promise<Blob> {
         const { language = 'en-US', voice = 'en-US-Neural2-C', speed = 1.0 } = options;
 
-        const endpoint = `https://texttospeech.googleapis.com/v1/text:synthesize?key=${this.apiKey}`;
-
-        const requestBody = {
-            input: { text },
-            voice: {
-                languageCode: language,
-                name: voice,
-            },
-            audioConfig: {
-                audioEncoding: 'MP3',
-                speakingRate: speed,
-            },
-        };
-
         try {
-            const response = await fetch(endpoint, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
+            const request = {
+                input: { text },
+                voice: {
+                    languageCode: language,
+                    name: voice,
                 },
-                body: JSON.stringify(requestBody),
-            });
+                audioConfig: {
+                    audioEncoding: 'MP3' as const,
+                    speakingRate: speed,
+                },
+            };
 
-            if (!response.ok) {
-                throw new Error(`Google TTS API error: ${response.statusText}`);
-            }
+            const [response] = await this.client.synthesizeSpeech(request);
 
-            const data = await response.json();
-
-            // Decode base64 audio content
-            const audioContent = data.audioContent;
-            if (!audioContent) {
+            if (!response.audioContent) {
                 throw new Error('No audio content in response');
             }
 
-            const binaryString = atob(audioContent);
-            const bytes = new Uint8Array(binaryString.length);
-            for (let i = 0; i < binaryString.length; i++) {
-                bytes[i] = binaryString.charCodeAt(i);
-            }
-
-            return new Blob([bytes], { type: 'audio/mpeg' });
+            // audioContent is already a Buffer or Uint8Array
+            return new Blob([response.audioContent], { type: 'audio/mpeg' });
         } catch (error) {
             console.error('GoogleTTSProvider error:', error);
             throw error;

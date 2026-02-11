@@ -10,6 +10,11 @@
     "module": "ES2020",
     "moduleResolution": "node"
   },
+  "ts-node": {
+    "esm": true,
+    "experimentalEsm": true,
+    "transpileOnly": true
+  },
   "include": [
     "src"
   ]

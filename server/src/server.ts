@@ -1,8 +1,8 @@
 import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
-import config from './config';
-import { initializeTTSProvider } from './providers';
-import { createTTSRoute } from './routes/tts';
+import config from './config.js';
+import { initializeTTSProvider } from './providers/index.js';
+import { createTTSRoute } from './routes/tts.js';
 
 const app = express();
 
@@ -27,7 +27,7 @@ app.get('/api/config', (_req: Request, res: Response) => {
 });
 
 // Initialize TTS provider and mount routes
-const ttsProvider = initializeTTSProvider(config.googleCloudProjectId, config.googleCloudTtsApiKey);
+const ttsProvider = initializeTTSProvider(config.googleCloudProjectId, config.googleCloudKeyFile);
 
 if (ttsProvider) {
     const ttsRoute = createTTSRoute({ provider: ttsProvider });
@@ -35,7 +35,7 @@ if (ttsProvider) {
 } else {
     // Fallback if no TTS provider configured
     app.post('/api/tts', (_req: Request, res: Response) => {
-        res.status(503).json({ error: 'TTS provider not configured. Set GOOGLE_CLOUD_PROJECT_ID and GOOGLE_CLOUD_TTS_API_KEY in .env' });
+        res.status(503).json({ error: 'TTS provider not configured. Set GOOGLE_CLOUD_PROJECT_ID and GOOGLE_CLOUD_KEY_FILE in .env' });
     });
 }
 

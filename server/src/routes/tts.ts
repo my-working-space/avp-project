@@ -1,5 +1,5 @@
 import { Router, Request, Response } from 'express';
-import { TTSProvider, TTSOptions } from '../../../shared/types/providers';
+import { TTSProvider, TTSOptions } from '../../../shared/types/providers.js';
 
 export interface TTSRouteConfig {
     provider: TTSProvider;
